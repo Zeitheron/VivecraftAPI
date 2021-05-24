@@ -1,0 +1,10 @@
+[
+	{
+	  "modid": "viveapi",
+	  "name": "Vivecraft API",
+	  "description": "Provides an API layer for ViveCraft mod, used by other mods to adjust / implement custom behaviors to VR",
+	  "version": "${version}",
+	  "mcversion": "${mcversion}",
+	  "authorList": ["Zeitheron"]
+	}
+]
