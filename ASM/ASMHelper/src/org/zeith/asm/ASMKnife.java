@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -26,10 +28,13 @@ public class ASMKnife
 	private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 	
 	public static final Map<String, String> bytecodeReplaces = new HashMap<>();
+	public static final Map<String, String> classReplaces = new HashMap<>();
 	
 	public static void replace(String mc, String forge)
 	{
-		bytecodeReplaces.put("L" + mc + ";", "L" + forge.replace('.', '/') + ";");
+		forge = forge.replace('.', '/');
+		classReplaces.put(mc, forge);
+		bytecodeReplaces.put("L" + mc + ";", "L" + forge + ";");
 	}
 	
 	public static void main(String[] args)
@@ -37,6 +42,7 @@ public class ASMKnife
 		replace("bhy", "net.minecraft.client.settings.KeyBinding");
 		replace("bhe", "net.minecraft.util.math.Vec3d");
 		replace("bib", "net.minecraft.client.Minecraft");
+		replace("bud", "net.minecraft.client.entity.EntityPlayerSP");
 		
 		File run = new File("run");
 		if(!run.isDirectory())
@@ -65,9 +71,39 @@ public class ASMKnife
 					{
 						data = read(in, (int) je.getSize());
 					}
+					
 					if(data != null)
 					{
 						ClassNode node = ObjectWebUtils.loadClass(data);
+						boolean dirty = false;
+						
+						String superReplaced = processClassReplaces(node.superName);
+						if(!superReplaced.equals(node.superName))
+						{
+							System.out.println("Changed superName in <TYPE> " + node.name + " from " + node.superName + " to " + superReplaced);
+							node.superName = superReplaced;
+							dirty = true;
+						}
+						
+						if(node.interfaces != null)
+						{
+							AtomicInteger ri = new AtomicInteger();
+							List<String> itfs = node.interfaces;
+							itfs.replaceAll(itf ->
+							{
+								String replaced = processClassReplaces(itf);
+								
+								if(!replaced.equals(itf))
+								{
+									System.out.println("Changed interface in <TYPE> " + node.name + " from " + node.superName + " to " + replaced);
+									ri.incrementAndGet();
+								}
+								
+								return itf;
+							});
+							if(ri.get() > 0)
+								dirty = true;
+						}
 						
 						List<MethodNode> methods = node.methods;
 						for(MethodNode mn : methods)
@@ -75,14 +111,20 @@ public class ASMKnife
 							String prev = mn.desc;
 							mn.desc = processReplaces(mn.desc);
 							if(!mn.desc.equals(prev))
+							{
 								System.out.println("Changed desc in <METHOD> " + mn.name + " from " + prev + " to " + mn.desc);
+								dirty = true;
+							}
 							
 							if(mn.signature != null)
 							{
 								prev = mn.signature;
 								mn.signature = processReplaces(mn.signature);
 								if(!mn.signature.equals(prev))
+								{
 									System.out.println("Changed signature in <METHOD> " + mn.name + " from " + prev + " to " + mn.signature);
+									dirty = true;
+								}
 							}
 						}
 						
@@ -92,22 +134,31 @@ public class ASMKnife
 							String prev = fn.desc;
 							fn.desc = processReplaces(fn.desc);
 							if(!fn.desc.equals(prev))
+							{
 								System.out.println("Changed desc in <FIELD> " + fn.name + " from " + prev + " to " + fn.desc);
+								dirty = true;
+							}
 							
 							if(fn.signature != null)
 							{
 								prev = fn.signature;
 								fn.signature = processReplaces(fn.signature);
 								if(!fn.signature.equals(prev))
+								{
 									System.out.println("Changed signature in <FIELD> " + fn.name + " from " + prev + " to " + fn.signature);
+									dirty = true;
+								}
 							}
 						}
 						
-						File target = new File(run, je.getName());
-						target.mkdirs();
-						target.delete();
-						
-						ObjectWebUtils.writeClassToFile(node, target);
+						if(dirty)
+						{
+							File target = new File(run, je.getName());
+							target.mkdirs();
+							target.delete();
+							
+							ObjectWebUtils.writeClassToFile(node, target);
+						}
 					}
 				}
 			}
@@ -130,6 +181,13 @@ public class ASMKnife
 	private static String processReplaces(String desc)
 	{
 		for(Entry<String, String> replace : bytecodeReplaces.entrySet())
+			desc = desc.replaceAll(replace.getKey(), replace.getValue());
+		return desc;
+	}
+	
+	private static String processClassReplaces(String desc)
+	{
+		for(Entry<String, String> replace : classReplaces.entrySet())
 			desc = desc.replaceAll(replace.getKey(), replace.getValue());
 		return desc;
 	}

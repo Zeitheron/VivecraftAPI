@@ -6,13 +6,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-import org.vivecraft.control.HapticScheduler;
 import org.vivecraft.control.VRInputAction;
 import org.vivecraft.gameplay.screenhandlers.GuiHandler;
 import org.vivecraft.provider.MCOpenVR;
@@ -34,12 +32,6 @@ public abstract class MixinMCOpenVR
 		return null;
 	}
 
-	@Accessor
-	public static HapticScheduler getHapticScheduler()
-	{
-		return null;
-	}
-
 	@ModifyArgs(
 			method = "processHotbar",
 			at = @At(
@@ -47,7 +39,7 @@ public abstract class MixinMCOpenVR
 					target = "Lorg/vivecraft/utils/Matrix4f;transform(Lorg/vivecraft/utils/Vector3;)Lorg/vivecraft/utils/Vector3;"
 			)
 	)
-	private static void hotbarVectors(Args args)
+	private static void processHotbarVectors(Args args)
 	{
 		Vector3 vec = args.get(0);
 
@@ -103,7 +95,10 @@ public abstract class MixinMCOpenVR
 		{
 			Vector2 vec = action.getAxis2D(false);
 			Vector2 dvec = action.getAxis2D(true);
-			if(VivecraftAPI.VR_BUS.post(new VRScrollEvent(keyBinding == GuiHandler.keyScrollAxis ? VRScrollEvent.ScrollEventType.SCROLL_AXIS : VRScrollEvent.ScrollEventType.HOTBAR_SCROLL, vec.getX(), vec.getY(), dvec.getX(), dvec.getY())))
+			if(VivecraftAPI.VR_BUS.post(new VRScrollEvent(keyBinding == GuiHandler.keyScrollAxis ? VRScrollEvent.ScrollEventType.SCROLL_AXIS : VRScrollEvent.ScrollEventType.HOTBAR_SCROLL,
+					vec.getX(), vec.getY(), dvec.getX(),
+					dvec.getY(),
+					action.name, action.requirement, action.type)))
 				ci.cancel();
 		}
 	}
