@@ -18,6 +18,14 @@ public class VivecraftAPI
 	}
 
 	/**
+	 * Gets the current VR player
+	 */
+	public IVRPlayer getVRPlayer()
+	{
+		return DummyVRPlayer.INSTANCE;
+	}
+
+	/**
 	 * Gets the current API instance used to proxy with Vivecraft, and as a result, SteamVR.
 	 */
 	public static VivecraftAPI getAPI()
@@ -40,6 +48,24 @@ public class VivecraftAPI
 		@Override
 		public void queueHapticPulse(EnumHapticsController hand, float durationSeconds, float frequency, float amplitude, float delaySeconds)
 		{
+		}
+	}
+
+	private static class DummyVRPlayer
+			implements IVRPlayer
+	{
+		static final DummyVRPlayer INSTANCE = new DummyVRPlayer();
+
+		@Override
+		public boolean isActive()
+		{
+			return false;
+		}
+
+		@Override
+		public IVRDeviceInfo getDeviceInfo(VRDataStage stage, VRDevice device)
+		{
+			return IVRDeviceInfo.DUMMY;
 		}
 	}
 }

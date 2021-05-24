@@ -14,7 +14,7 @@ import org.zeith.viveapi.util.VivecraftClasses;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-@Mod(modid = "viveapi", name = "Vivecraft API", version = "@VERSION@", certificateFingerprint = "9f5e2a811a8332a842b34f6967b7db0ac4f24856")
+@Mod(modid = "viveapi", name = "Vivecraft API", version = "@VERSION@", certificateFingerprint = "9f5e2a811a8332a842b34f6967b7db0ac4f24856", updateJSON = "http://dccg.herokuapp.com/api/fmluc/485932")
 public class ViveAPIMod
 {
 	public static final Side LAUNCH_SIDE = FMLCommonHandler.instance().getSide();

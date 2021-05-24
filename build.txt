@@ -15,5 +15,5 @@ mod_id=viveapi
 mod_id_fancy=VivecraftAPI
 mod_name=Vivecraft API
 mod_version=12.1.1
-cf_project=0
+cf_project=485932
 release_type=release

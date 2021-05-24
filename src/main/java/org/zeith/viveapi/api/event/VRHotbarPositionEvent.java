@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * This event is used to determine the position of the hot-bar.
  * Might be useful if your mod changes positions.
- *
+ * <p>
  * Fired on {@link org.zeith.viveapi.api.VivecraftAPI#VR_BUS}
  */
 public class VRHotbarPositionEvent
@@ -40,12 +40,6 @@ public class VRHotbarPositionEvent
 				", y=" + y +
 				", z=" + z +
 				'}';
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(reverseHands, lock, type, x, y, z);
 	}
 
 	public enum HudLock

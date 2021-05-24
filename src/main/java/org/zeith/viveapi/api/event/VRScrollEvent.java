@@ -35,6 +35,21 @@ public class VRScrollEvent
 		this.type = type;
 	}
 
+	@Override
+	public String toString()
+	{
+		return "VRScrollEvent{" +
+				"eventType=" + eventType +
+				", valueX=" + valueX +
+				", valueY=" + valueY +
+				", deltaX=" + deltaX +
+				", deltaY=" + deltaY +
+				", name='" + name + '\'' +
+				", requirement='" + requirement + '\'' +
+				", type='" + type + '\'' +
+				'}';
+	}
+
 	public enum ScrollEventType
 	{
 		SCROLL_AXIS,

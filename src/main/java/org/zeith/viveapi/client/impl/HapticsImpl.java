@@ -12,14 +12,12 @@ public class HapticsImpl
 	@Override
 	public void triggerHapticPulse(EnumHapticsController controller, float durationSeconds, float frequency, float amplitude)
 	{
-		ControllerType type = controllerTypes[controller.ordinal()];
-		MCOpenVR.triggerHapticPulse(type, durationSeconds, frequency, amplitude);
+		MCOpenVR.triggerHapticPulse(controllerTypes[controller.ordinal()], durationSeconds, frequency, amplitude);
 	}
 
 	@Override
 	public void queueHapticPulse(EnumHapticsController controller, float durationSeconds, float frequency, float amplitude, float delaySeconds)
 	{
-		ControllerType type = controllerTypes[controller.ordinal()];
-		MCOpenVR.triggerHapticPulse(type, durationSeconds, frequency, amplitude, delaySeconds);
+		MCOpenVR.triggerHapticPulse(controllerTypes[controller.ordinal()], durationSeconds, frequency, amplitude, delaySeconds);
 	}
 }

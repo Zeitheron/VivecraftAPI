@@ -17,6 +17,7 @@ import org.vivecraft.provider.MCOpenVR;
 import org.vivecraft.utils.Vector2;
 import org.vivecraft.utils.Vector3;
 import org.zeith.viveapi.api.VivecraftAPI;
+import org.zeith.viveapi.api.event.VRHotbarHoverEvent;
 import org.zeith.viveapi.api.event.VRHotbarPositionEvent;
 import org.zeith.viveapi.api.event.VRScrollEvent;
 
@@ -81,6 +82,21 @@ public abstract class MixinMCOpenVR
 			VivecraftAPI.VR_BUS.post(evt);
 			args.set(0, new Vector3(x, y, z));
 		}
+	}
+
+	@ModifyArgs(
+			method = "processHotbar",
+			at = @At(
+					value = "INVOKE",
+					target = "Ljava/lang/Math;floor(D)D"
+			)
+	)
+	private static void processHotbarHook(Args args)
+	{
+		double d = args.get(0);
+		VRHotbarHoverEvent evt = new VRHotbarHoverEvent((float) (d / 9F));
+		if(VivecraftAPI.VR_BUS.post(evt)) args.set(0, 100.0);
+		else args.set(0, evt.newPos * 9.0);
 	}
 
 	@Inject(
