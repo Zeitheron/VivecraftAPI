@@ -26,6 +26,14 @@ public class VivecraftAPI
 	}
 
 	/**
+	 * Gets VR key bindings
+	 */
+	public IKeyBindings getKeyBindings()
+	{
+		return DummyKeyBindings.INSTANCE;
+	}
+
+	/**
 	 * Gets the current API instance used to proxy with Vivecraft, and as a result, SteamVR.
 	 */
 	public static VivecraftAPI getAPI()
@@ -41,12 +49,12 @@ public class VivecraftAPI
 		static final DummyHaptics INSTANCE = new DummyHaptics();
 
 		@Override
-		public void triggerHapticPulse(EnumHapticsController hand, float durationSeconds, float frequency, float amplitude)
+		public void triggerHapticPulse(EnumController hand, float durationSeconds, float frequency, float amplitude)
 		{
 		}
 
 		@Override
-		public void queueHapticPulse(EnumHapticsController hand, float durationSeconds, float frequency, float amplitude, float delaySeconds)
+		public void queueHapticPulse(EnumController hand, float durationSeconds, float frequency, float amplitude, float delaySeconds)
 		{
 		}
 	}
@@ -66,6 +74,18 @@ public class VivecraftAPI
 		public IVRDeviceInfo getDeviceInfo(VRDataStage stage, VRDevice device)
 		{
 			return IVRDeviceInfo.DUMMY;
+		}
+	}
+
+	private static class DummyKeyBindings
+			implements IKeyBindings
+	{
+		static final DummyKeyBindings INSTANCE = new DummyKeyBindings();
+
+		@Override
+		public boolean isInteractPressedOnHotbar()
+		{
+			return false;
 		}
 	}
 }

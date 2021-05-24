@@ -118,6 +118,14 @@ processResources
 	rename "mod_id_at.cfg", "META-INF/${config.mod_id}_at.cfg"
 }
 
+task srcJar(type: Jar, dependsOn: classes) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+	manifest {
+        attributes 'FMLAT': "${config.mod_id}_at.cfg"
+    }
+}
+
 task deobfJar(type: Jar) {
     from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
         exclude 'LICENSE.txt', 'META-INF/MANIFSET.MF', 'META-INF/maven/**', 'META-INF/*.RSA', 'META-INF/*.SF'
@@ -152,6 +160,7 @@ jar {
 
 artifacts {
     archives deobfJar
+	archives srcJar
 }
 
 curseforge {
@@ -165,9 +174,6 @@ curseforge {
 		mainArtifact(jar) {
 		  displayName = "[${config.minecraft_version}] ${config.mod_name} - ${config.mod_version}"
 		}
-		relations {
-            requiredLibrary 'Hammer-Lib'
-        }
 	}
 }
 
@@ -216,10 +222,12 @@ task makeChangelog(type: se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask) {
 
 build.dependsOn signJar
 build.dependsOn signDeobfJar
+build.dependsOn srcJar
 tasks.build.dependsOn makeChangelog
 
 afterEvaluate {
 	tasks["curseforge${config.cf_project}"].dependsOn.add(signJar)
 	tasks["curseforge${config.cf_project}"].dependsOn.add(signDeobfJar)
+	tasks["curseforge${config.cf_project}"].dependsOn.add(srcJar)
 	tasks["curseforge${config.cf_project}"].dependsOn.add(makeChangelog)
 }

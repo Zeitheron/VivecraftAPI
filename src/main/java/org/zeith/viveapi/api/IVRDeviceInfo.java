@@ -6,18 +6,39 @@ import javax.vecmath.Matrix4f;
 
 public interface IVRDeviceInfo
 {
+	/**
+	 * Get the position of this device
+	 */
 	Vec3d getPosition();
 
+	/**
+	 * Get the direction vector of this device
+	 */
 	Vec3d getDirection();
 
+	/**
+	 * Get the custom vector relative to this device
+	 */
 	Vec3d getCustomVector(Vec3d axis);
 
+	/**
+	 * Get yaw of this device
+	 */
 	float getYaw();
 
+	/**
+	 * Get pitch of this device
+	 */
 	float getPitch();
 
+	/**
+	 * Get roll of this device
+	 */
 	float getRoll();
 
+	/**
+	 * Get transformation matrix of this device
+	 */
 	Matrix4f getMatrix();
 
 	IVRDeviceInfo DUMMY = new IVRDeviceInfo()

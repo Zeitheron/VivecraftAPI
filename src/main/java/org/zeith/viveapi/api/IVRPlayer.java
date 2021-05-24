@@ -2,8 +2,15 @@ package org.zeith.viveapi.api;
 
 public interface IVRPlayer
 {
+	/**
+	 * Is this player active at all?
+	 * Always false for dummy vr player.
+	 */
 	boolean isActive();
 
+	/**
+	 * Gets the wrapped device info on the given stage of a specific device.
+	 */
 	IVRDeviceInfo getDeviceInfo(VRDataStage stage, VRDevice device);
 
 	enum VRDevice
